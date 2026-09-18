@@ -1,0 +1,55 @@
+# ============================================================================
+# Go2 EDU 제어 컨테이너 실행 설정
+#
+#   docker compose run --rm go2            # 대화형 shell
+#   docker compose up -d go2 && docker compose exec go2 bash   # 상주 컨테이너
+#
+# 사전 준비 (한 번):  ./build.sh
+# 실물 ↔ sim 전환:    ROBOT_IF=lo docker compose run --rm go2
+# ============================================================================
+services:
+  go2:
+    image: go2:humble
+    container_name: go2
+    hostname: go2-dock
+
+    # --- DDS: host network 필수 (CycloneDDS multicast / shared memory) ---
+    network_mode: host
+    ipc: host
+    pid: host
+
+    # --- GPU/Jetson device (ubuntu:22.04 base 로 빌드했다면 runtime 줄은 삭제) ---
+    runtime: nvidia
+
+    # --- Xbox controller / USB ---
+    devices:
+      - /dev/input:/dev/input
+      - /dev/bus/usb:/dev/bus/usb
+
+    # --- Real-time priority (500Hz low-level loop, SCHED_FIFO) — non-root도 가능 ---
+    cap_add:
+      - SYS_NICE
+    ulimits:
+      rtprio: 99
+      memlock: -1
+
+    environment:
+      - ROBOT_IF=${ROBOT_IF:-eth0}      # 로봇 연결 interface (sim: lo)
+      - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
+      - DISPLAY=${DISPLAY}              # rviz2 / rqt 등 GUI 앱용
+      - QT_X11_NO_MITSHM=1
+
+    volumes:
+      # 내 코드 — 이미지에 넣지 않고 mount (UID 일치 → 권한 문제 없음)
+      - ${HOME}/go2_ws:${HOME}/go2_ws
+      # GUI (X11)
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      # rosbag 저장 위치
+      - ${HOME}/go2_bags:${HOME}/go2_bags
+      # jtop socket (컨테이너 안에서 jtop 보고 싶을 때, host에 jetson-stats 설치 필요)
+      - /run/jtop.sock:/run/jtop.sock
+
+    working_dir: ${HOME}/go2_ws
+    stdin_open: true
+    tty: true
+    command: bash
