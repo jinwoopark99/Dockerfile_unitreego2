@@ -1,15 +1,18 @@
 # ============================================================================
 # Go2 EDU 제어 컨테이너 실행 설정
 #
-#   docker compose run --rm go2            # 대화형 shell
-#   docker compose up -d go2 && docker compose exec go2 bash   # 상주 컨테이너
+#   docker compose run --rm go2                                      # 대화형 shell
+#   docker compose up -d go2 && docker compose exec -u go2 go2 bash  # 상주 컨테이너
 #
-# 사전 준비 (한 번):  ./build.sh
+# 사전 준비 (기기마다 1회):
+#   mkdir -p ~/go2_ws ~/go2_bags
+#   printf '%s' '비밀번호' > ~/.go2_password && chmod 600 ~/.go2_password
 # 실물 ↔ sim 전환:    ROBOT_IF=lo docker compose run --rm go2
+# 다른 이미지 사용:   GO2_IMAGE=go2:test docker compose run --rm go2
 # ============================================================================
 services:
   go2:
-    image: go2:humble
+    image: ${GO2_IMAGE:-mirgaon/go2:humble-jetson}
     container_name: go2
     hostname: go2-dock
 
@@ -39,17 +42,25 @@ services:
       - DISPLAY=${DISPLAY}              # rviz2 / rqt 등 GUI 앱용
       - QT_X11_NO_MITSHM=1
 
+    # --- go2 sudo 비밀번호 (컨테이너 시작 시 entrypoint 가 설정) ---
+    secrets:
+      - go2_password
+
     volumes:
-      # 내 코드 — 이미지에 넣지 않고 mount (UID 일치 → 권한 문제 없음)
-      - ${HOME}/go2_ws:${HOME}/go2_ws
+      # 내 코드 — 이미지에 넣지 않고 mount (컨테이너 user go2 = UID 1000)
+      - ${HOME}/go2_ws:/home/go2/go2_ws
       # GUI (X11)
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       # rosbag 저장 위치
-      - ${HOME}/go2_bags:${HOME}/go2_bags
+      - ${HOME}/go2_bags:/home/go2/go2_bags
       # jtop socket (컨테이너 안에서 jtop 보고 싶을 때, host에 jetson-stats 설치 필요)
       - /run/jtop.sock:/run/jtop.sock
 
-    working_dir: ${HOME}/go2_ws
+    working_dir: /home/go2/go2_ws
     stdin_open: true
     tty: true
     command: bash
+
+secrets:
+  go2_password:
+    file: ${HOME}/.go2_password
