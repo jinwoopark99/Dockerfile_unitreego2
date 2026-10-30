@@ -136,9 +136,8 @@ ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp \
     ROS_DOMAIN_ID=0
 
 COPY --chmod=755 entrypoint.sh /usr/local/bin/entrypoint.sh
-# docker exec -u go2 로 들어온 shell 에도 같은 환경이 잡히도록 .bashrc 에서 env만 source
-RUN echo 'source /usr/local/bin/entrypoint.sh --env-only' >> /home/go2/.bashrc \
-    && chown go2:go2 /home/go2/.bashrc
+# bashrc
+RUN echo 'source /usr/local/bin/entrypoint.sh --env-only' >> /etc/bash.bashrc
 
 WORKDIR /home/go2
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

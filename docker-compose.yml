@@ -41,26 +41,18 @@ services:
       - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
       - DISPLAY=${DISPLAY}              # rviz2 / rqt 등 GUI 앱용
       - QT_X11_NO_MITSHM=1
-
-    # --- go2 sudo 비밀번호 (컨테이너 시작 시 entrypoint 가 설정) ---
-    secrets:
-      - go2_password
+      - HOST_HOME=${HOME}
+      - HOST_USER=${USER}
 
     volumes:
       # 내 코드 — 이미지에 넣지 않고 mount (컨테이너 user go2 = UID 1000)
-      - ${HOME}/go2_ws:/home/go2/go2_ws
+      - ${HOME}:${HOME}
       # GUI (X11)
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
-      # rosbag 저장 위치
-      - ${HOME}/go2_bags:/home/go2/go2_bags
       # jtop socket (컨테이너 안에서 jtop 보고 싶을 때, host에 jetson-stats 설치 필요)
       - /run/jtop.sock:/run/jtop.sock
 
-    working_dir: /home/go2/go2_ws
+    working_dir: ${HOME}
     stdin_open: true
     tty: true
     command: bash
-
-secrets:
-  go2_password:
-    file: ${HOME}/.go2_password
