@@ -12,7 +12,7 @@
 # ============================================================================
 services:
   go2:
-    image: ${GO2_IMAGE:-mirgaon/go2:humble-jetson}
+    image: ${GO2_IMAGE:-mirgaon/go2-humble:latest}
     container_name: go2
     hostname: go2-dock
 

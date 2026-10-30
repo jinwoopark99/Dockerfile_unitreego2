@@ -1,10 +1,10 @@
-# mirgaon/go2 — Docker Image 구성
+# mirgaon/go2-humble — Docker Image 구성
 
 Unitree Go2 EDU low-level 제어용 ROS2 Humble 개발 환경 이미지.
 
 | 항목 | 내용 |
 |---|---|
-| Docker Hub | `mirgaon/go2:humble-jetson` (버전 tag: `humble-jetson-v2.0.0`) |
+| Docker Hub | `mirgaon/go2-humble:latest` (버전 tag: `v2.0.0`) |
 | Source | https://github.com/jinwoopark99/Dockerfile_unitreego2 |
 | 대상 기기 | Go2 EDU Jetson (arm64, JetPack 6 / L4T r36) |
 | OS (컨테이너) | Ubuntu 22.04 |
@@ -266,8 +266,8 @@ docker exec -it -u $USER go2 bash     # 접속
 
 **push 전 확인**
 ```bash
-docker run --rm --entrypoint grep mirgaon/go2:humble-jetson '^go2:' /etc/shadow   # go2:!:...
-docker history --no-trunc mirgaon/go2:humble-jetson | grep -i -E "pass|secret|shadow"   # 출력 없음
+docker run --rm --entrypoint grep mirgaon/go2-humble:latest '^go2:' /etc/shadow   # go2:!:...
+docker history --no-trunc mirgaon/go2-humble:latest | grep -i -E "pass|secret|shadow"   # 출력 없음
 ```
 
 ---

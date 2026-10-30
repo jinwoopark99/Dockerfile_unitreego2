@@ -1,6 +1,6 @@
 # Unitree Go2 EDU — ROS2 Humble Docker (Jetson / JetPack 6)
 
-Go2 EDU low-level 제어용 Docker 환경. Docker Hub: `mirgaon/go2:humble-jetson`
+Go2 EDU low-level 제어용 Docker 환경. Docker Hub: `mirgaon/go2-humble:latest`
 
 - 이미지 내용: **ROS2 Humble (ros-base) + CycloneDDS 0.10.x / unitree_ros2 + unitree_sdk2 (C++)**, 그 외 `joy`, `rosbag2-mcap`, 빌드/디버그 도구
 - 대상: Go2 EDU Jetson (arm64, JetPack 6 / L4T r36)
@@ -66,7 +66,7 @@ ros2 topic hz /lowstate                  # ~500 Hz
 ## 직접 build
 
 ```bash
-./build.sh                                     # 기본 l4t-jetpack:r36.4.0 → mirgaon/go2:humble-jetson
+./build.sh                                     # 기본 l4t-jetpack:r36.4.0 → mirgaon/go2-humble:latest
 ./build.sh nvcr.io/nvidia/l4t-jetpack:r36.4.3  # host L4T 버전에 맞출 때 (cat /etc/nv_tegra_release)
 GO2_IMAGE=go2:test ./build.sh ubuntu:22.04     # GPU 불필요/경량
 ```

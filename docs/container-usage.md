@@ -4,7 +4,7 @@
 
 | 항목 | 값 |
 |---|---|
-| 이미지 | `mirgaon/go2:humble-jetson` |
+| 이미지 | `mirgaon/go2-humble:latest` |
 | 컨테이너 이름 | `go2` |
 | 시작 | `./docker-run.sh` |
 | 접속 | `docker exec -it -u $USER go2 bash` |
@@ -51,7 +51,7 @@ cd ~/go2_docker
 == Set sudo password for container user 'unitree' (use a different one from your host account)
 New password:
 Retype new password:
-== Creating go2 (image: mirgaon/go2:humble-jetson, ROBOT_IF: enP8p1s0)
+== Creating go2 (image: mirgaon/go2-humble:latest, ROBOT_IF: enP8p1s0)
 == sudo password set
 == go2 is running
 
@@ -73,7 +73,7 @@ Enter:  docker exec -it -u unitree go2 bash
 
 ```bash
 ROBOT_IF=eth0 ./docker-run.sh                                 # 로봇 interface (기본 enP8p1s0)
-GO2_IMAGE=mirgaon/go2:humble-jetson-v2.0.0 ./docker-run.sh    # 특정 버전 이미지
+GO2_IMAGE=mirgaon/go2-humble:v2.0.0 ./docker-run.sh    # 특정 버전 이미지
 GO2_CONTAINER=go2_test ./docker-run.sh                        # 컨테이너 이름 (기본 go2)
 ROS_DOMAIN_ID=1 ./docker-run.sh                               # DDS domain (기본 0)
 ```
@@ -153,7 +153,7 @@ docker exec -it go2 bash        # 또는 host에서 root shell로 바로 접속
 | 정지 | `./docker-run.sh --stop` |
 | 다시 시작 / Jetson 재부팅 후 | `./docker-run.sh` |
 | 삭제 | `./docker-run.sh --rm` |
-| 새 이미지로 교체 | `docker pull mirgaon/go2:humble-jetson && ./docker-run.sh --recreate` |
+| 새 이미지로 교체 | `docker pull mirgaon/go2-humble:latest && ./docker-run.sh --recreate` |
 
 - 내 파일은 모두 host HOME에 있어서, 컨테이너를 삭제해도 사라지지 않음.
 

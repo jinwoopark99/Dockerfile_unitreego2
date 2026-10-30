@@ -15,7 +15,7 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 BASE_IMAGE="${1:-nvcr.io/nvidia/l4t-jetpack:r36.4.0}"
-IMAGE_TAG="${GO2_IMAGE:-mirgaon/go2:humble-jetson}"
+IMAGE_TAG="${GO2_IMAGE:-mirgaon/go2-humble:latest}"
 
 [ -f ./versions.env ] || { echo "ERROR: versions.env 없음" >&2; exit 1; }
 set -a; source ./versions.env; set +a

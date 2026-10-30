@@ -21,14 +21,14 @@
 #   정지·재시작해도 유지, 컨테이너를 삭제하면 사라짐 → 다시 만들 때 새로 입력
 #
 # 환경변수로 변경 가능:
-#   GO2_IMAGE      (기본: mirgaon/go2:humble-jetson)
+#   GO2_IMAGE      (기본: mirgaon/go2-humble:latest)
 #   GO2_CONTAINER  (기본: go2)
 #   ROBOT_IF       (기본: enP8p1s0)  로봇 연결 network interface (기기마다 다를 수 있음)
 #   ROS_DOMAIN_ID  (기본: 0)
 # ============================================================================
 set -euo pipefail
 
-IMAGE="${GO2_IMAGE:-mirgaon/go2:humble-jetson}"
+IMAGE="${GO2_IMAGE:-mirgaon/go2-humble:latest}"
 NAME="${GO2_CONTAINER:-go2}"
 ROBOT_IF="${ROBOT_IF:-enP8p1s0}"
 ROS_DOMAIN_ID="${ROS_DOMAIN_ID:-0}"
