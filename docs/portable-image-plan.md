@@ -1,9 +1,45 @@
-# Dockerfile_unitreego2 수정사항 정리 (v3)
+# Dockerfile_unitreego2 v1 → v2 수정 내역
 
 - 대상 repo: https://github.com/jinwoopark99/Dockerfile_unitreego2 (commit `70ad510`)
 - 대상 이미지: Docker Hub `mirgaon/go2`
 - 작성일: 2026-10-28
 - 목표: **로컬 host 전용 이미지 → 어느 기기에서나 pull해서 쓰는 배포용 이미지**
+
+## 최종 결과 (2026-10-29, Jetson 실기 검증 완료)
+
+아래 "계획" 이후 실제 작업에서 바뀐 부분을 먼저 정리함. **현재 구조는 이 섹션과 `docs/image-architecture.md`가 기준.**
+
+| # | 계획 | 최종 |
+|---|---|---|
+| 1 | 비밀번호: host `~/.go2_password` → compose secret → entrypoint 설정 | **파일 없이**, `docker-run.sh`가 컨테이너 생성 시 입력받아 `docker exec ... chpasswd`로 설정. entrypoint에서 비밀번호 코드 삭제 |
+| 2 | `sudo make install` → `USER root` | 계획대로 |
+| 3 | 고정 user `go2` (1000), workspace만 `/home/go2/go2_ws`로 mount | user는 계획대로. **mount는 host HOME 전체를 같은 경로로 (`${HOME}:${HOME}`)**, working dir `${HOME}`. entrypoint가 `usermod -d ${HOST_HOME} go2`로 HOME 변경. 환경 설정은 `/etc/bash.bashrc`로 이동 |
+| 4 | CycloneDDS 소스 build 유지 | 계획대로 |
+| 5 | `(rosdep init \|\| true)` | 계획대로 |
+| 6 | `versions.env` 고정 | 계획대로 |
+| 7 | sim `ROS_DOMAIN_ID` | 보류 (`ROS_DOMAIN_ID=1 ./docker-run.sh`로 대응 가능) |
+| 8-1 | compose image 이름 → `mirgaon/go2:humble-jetson` | 계획대로 |
+| 추가 | — | **`docker-run.sh` 추가 (기본 실행 방법)**: 생성/시작/정지/삭제, 비밀번호 설정, `ROBOT_IF` 기본값 `enP8p1s0`, `--add-host go2-dock:127.0.1.1`, nvidia runtime·device·jtop은 있을 때만 추가, 출력 메시지 영어 |
+| 추가 | — | compose의 `secrets` 삭제. compose는 보조용 |
+| 추가 | — | **컨테이너 안 사용자 이름을 host와 같게**: entrypoint가 UID 1000 계정(`go2`)을 `HOST_USER`/`HOST_GROUP`으로 이름 변경 (`usermod -l`, `groupmod -n`). 접속은 `docker exec -it -u $USER go2 bash` |
+| 추가 | — | hostname은 `go2-dock` 유지 (host와 프롬프트 구분). GUI(X11) 인증 문제는 필요할 때 `xhost +si:localuser:$USER`로 대응 |
+
+**검증 결과 (Go2 Jetson)**
+- `./docker-run.sh --recreate` → 비밀번호 입력 → 생성 정상
+- `sudo -v` 정상, 정지/재시작 후에도 비밀번호 유지
+- HOME `/home/unitree`, host 파일 그대로 보임
+- `ros2 topic hz /lowstate` ≈ 500 Hz
+
+**남은 작업**
+- [ ] 사용자 이름 변경 반영 이미지로 재build → `whoami`가 host 사용자인지 확인
+- [ ] 보안 확인 (`/etc/shadow`의 UID 1000 계정이 `!`, `docker history` 검사)
+- [ ] Jetson에서 수정한 파일 GitHub 반영 → PR merge → `v2.0.0` tag
+- [ ] Docker Hub 기존 repo 삭제 → 재생성 → push (`humble-jetson`, `humble-jetson-v2.0.0`) → pull 테스트 → Public 전환
+- [ ] 보류: 조이스틱 `input` group GID, sim domain, `build.sh` 메시지 영어화
+
+---
+
+## 계획 (작성 당시 기록)
 
 | # | 항목 | 결정 |
 |---|---|---|
